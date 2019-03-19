@@ -1,0 +1,4 @@
+#git提交忽略下列文件夹
+/__pycache__/
+/venv/
+/.idea/
