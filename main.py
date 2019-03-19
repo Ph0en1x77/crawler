@@ -1,11 +1,14 @@
 import crawler
 import regions_parse
 import houses_parse
+import pymysql
 
 if __name__ == '__main__':
     response = crawler.crawler('https://bj.lianjia.com/ershoufang/city?city_id=110000')
     regions_url = regions_parse.parse(response)
     base_url = 'https://m.lianjia.com'
+    con = pymysql.connect(host="localhost",user='root',password='123456',port=3306,database='crawler')
+    cursor = con.cursor()
     for key in regions_url:
         i = 1
         while True:
@@ -15,7 +18,14 @@ if __name__ == '__main__':
             if len(result) != 0:
                 break
             houses_info = houses_parse.parse_houseinfo(key,houses_info_response)
-            print(houses_info)
+            sql = 'insert into house_info values' + ' (' + ','.join(houses_info) +')'
+            try:
+                cursor.execute(sql)
+                con.commit()
+            except:
+                con.rollback()
             i = i + 1
+    con.close()
+
 
 
